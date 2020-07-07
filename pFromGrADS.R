@@ -73,8 +73,8 @@ pFromGrADS <- function(coordFile, gridsPath, outFile,
     rr[rr==naValue]=NA_real_
     
     # store resulting raster in rList
-    rList[[i]] <- rr
-    
+    rList[[tt]] <- rr
+
     # extract values at coordinates and add them to data.frame
     row <- paste(tt, 
                paste(raster::extract(rr, cbind(coords$lon, coords$lat)),
