@@ -78,4 +78,4 @@ animation::saveGIF({
 movie.name='c:/data/20160601.gif', ani.width=700, ani.height=450)
 ```
 
-![](20160601.gif)
+![](anim20160601.gif)
