@@ -3,8 +3,8 @@ pFromGrADS <- function(coordFile, gridsPath, outFile,
                        bbox, nx, ny, naValue, p4str,
                        dateTimeSep){
 
-  require(sp)
-  require(raster)
+  library(sp)
+  library(raster)
 
   # read coordinates file
   if(!file.exists(coordFile))
