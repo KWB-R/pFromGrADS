@@ -23,15 +23,7 @@ Assuming all required data (GrADS grids, coordinates file and script with functi
 source('c:/data/pFromGrADS.R')
 
 # call function using the given input parameters
-rList <- pFromGrADS(coordFile='c:/data/coords.txt',
-gridsPath='c:/data/grids/',
-					outFile='c:/data/rain.txt',
-					bbox=c(xmin=70.05, xmax=140.05, ymin=15.05, ymax=59.05),
-					nx=700,
-					ny=440,
-					naValue=-999,
-					p4str="+proj=longlat +datum=WGS84",
-					dateTimeSep='-')
+rList <- pFromGrADS(coordFile='c:/data/coords.txt', gridsPath='c:/data/grids/', outFile='c:/data/rain.txt', bbox=c(xmin=70.05, xmax=140.05, ymin=15.05, ymax=59.05), nx=700, ny=440, naValue=-999, p4str="+proj=longlat +datum=WGS84", dateTimeSep='-')
 ```
 
 The resulting output file contains the time stamps in the first column (which are built using the GrADS files' names) and the corresponding rainfall depth at each time step for each coordinate point in coordFile:
