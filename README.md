@@ -24,7 +24,7 @@ source('c:/data/pFromGrADS.R')
 
 # call function using the given input parameters
 rList <- pFromGrADS(coordFile='c:/data/coords.txt',
-					gridsPath='c:/data/grids/',
+gridsPath='c:/data/grids/',
 					outFile='c:/data/rain.txt',
 					bbox=c(xmin=70.05, xmax=140.05, ymin=15.05, ymax=59.05),
 					nx=700,
