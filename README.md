@@ -55,6 +55,11 @@ require(animation)
 # read background shapefile
 bg <- raster::shapefile('c:/data/bgShapefile.shp')
 
+# create color ramp for plotting
+breaks <- seq(0, 80, by=1)
+nbreaks <- length(breaks)-1
+colfunc <- colorRampPalette(c(NA, "blue"))
+
 # create animation looping over rList
 animation::saveGIF({
   for(i in 1:length(rList)){
@@ -62,9 +67,6 @@ animation::saveGIF({
                  format='%Y-%m-%d %H:%M')
     rri <- rList[[i]]
     
-    breaks <- seq(0, 80, by=1)
-    nbreaks <- length(breaks)-1
-    colfunc <- colorRampPalette(c(NA, "blue"))
     par(mar=c(3, 4, 3, 4))
     plot(rri, zlim=c(0, 80), legend=FALSE, box=FALSE, xlab="", ylab="",
          cex.axis=1, col=colfunc(nbreaks))
