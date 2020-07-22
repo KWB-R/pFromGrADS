@@ -81,15 +81,9 @@ listGridFiles <- function(gridsPath)
 # initRainDataFrame ------------------------------------------------------------
 initRainDataFrame <- function(columns)
 {
-  rain <- data.frame(dateTime = character())
-  
-  for (i in 1:length(columns)) {
-    rain <- cbind(rain, character())
-  }
-  
-  names(rain) <- c("dateTime", columns)
-  
-  rain
+  columns <- stats::setNames(nm = c("dateTime", columns))
+
+  do.call(data.frame, lapply(columns, function(i) character()))
 }
 
 # writeRainData ----------------------------------------------------------------
