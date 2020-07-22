@@ -38,7 +38,7 @@ pFromGrADS <- function(coordFile, gridsPath, outFile,
     tt <- getDateTimeFromFilename(grdi, sep = dateTimeSep)
 
     # convert GrADS file contents to a matrix
-    mm <- valuesToMatrix(xx, nx, ny, naValue)
+    mm <- valuesToMatrix(xx, nrow = ny, naValue)
     
     # convert matrix to raster object
     rr <- convertToRasterObject(mm, bbox, p4str)
@@ -130,19 +130,16 @@ convertToRasterObject <- function(mm, bbox, p4str)
 }
 
 # valuesToMatrix ---------------------------------------------------------------
-valuesToMatrix <- function(x, nx, ny, naValue)
+valuesToMatrix <- function(x, nrow, naValue)
 {
-  m <- matrix(NA, nrow = ny, ncol = nx)
-  
-  for (j in 1:ny) {
-    end <- j * nx
-    start <- end - nx + 1
-    m[ny - j, ] <- x[start:end]
-  }
-  
+  # Arrange the values in a matrix, fill the matrix row by row
+  m <- matrix(x, byrow = TRUE, nrow = nrow)[rev(seq_len(nrow)), ]
+
+  # Replace NA indicating value with a proper NA value
   m[m == naValue] <- NA_real_
   
-  m
+  # Revert the row order
+  m[rev(seq_len(nrow)), ]
 }
 
 # extractRowFromRaster ---------------------------------------------------------
