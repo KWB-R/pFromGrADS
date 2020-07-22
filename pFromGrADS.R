@@ -98,19 +98,14 @@ writeRainData <- function(rain, outFile)
 # readGradsData ----------------------------------------------------------------
 readGradsData <- function(file, nx, ny)
 {
-  grdsize <- nx * ny
+  # Open the file as a binary stram. Close the file when this function is quit
+  # (either regularly or due to an error)
+  con <- file(file, "rb")
+  on.exit(close(con))
   
-  grdconn <- file(file, "rb")
-  
-  # Read GrADS data set as stream skipping one record at beginning and end.
-  # Records have a size of 4 bytes
-  skip <- readBin(con = grdconn, what = "numeric", n = 1, size = 4)
-  xx <- readBin(con = grdconn, what = "numeric", n = grdsize, size = 4)
-  skip <- readBin(con = grdconn, what = "numeric", n = 1, size = 4)
-  
-  close(grdconn)
-  
-  xx
+  # Records have a size of 4 bytes. Read one more than required for the grid.
+  # Directly remove the first record by indexing with [-1]
+  readBin(con, what = "numeric", n = nx * ny + 1L, size = 4L)[-1L]
 }
 
 # getDateTimeFromFilename ------------------------------------------------------
