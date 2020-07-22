@@ -120,6 +120,19 @@ getDateTimeFromFilename <- function(grdi, sep)
                    split = sep)[[1]][2])
 }
 
+# valuesToMatrix ---------------------------------------------------------------
+valuesToMatrix <- function(x, nrow, naValue)
+{
+  # Arrange the values in a matrix, fill the matrix row by row
+  m <- matrix(x, byrow = TRUE, nrow = nrow)[rev(seq_len(nrow)), ]
+  
+  # Replace NA indicating value with a proper NA value
+  m[m == naValue] <- NA_real_
+  
+  # Revert the row order
+  m[rev(seq_len(nrow)), ]
+}
+
 # convertToRasterObject --------------------------------------------------------
 convertToRasterObject <- function(mm, bbox, p4str)
 {
@@ -127,19 +140,6 @@ convertToRasterObject <- function(mm, bbox, p4str)
                  xmn = bbox['xmin'], xmx = bbox['xmax'], 
                  ymn = bbox['ymin'], ymx = bbox['ymax'],
                  crs = p4str)
-}
-
-# valuesToMatrix ---------------------------------------------------------------
-valuesToMatrix <- function(x, nrow, naValue)
-{
-  # Arrange the values in a matrix, fill the matrix row by row
-  m <- matrix(x, byrow = TRUE, nrow = nrow)[rev(seq_len(nrow)), ]
-
-  # Replace NA indicating value with a proper NA value
-  m[m == naValue] <- NA_real_
-  
-  # Revert the row order
-  m[rev(seq_len(nrow)), ]
 }
 
 # extractRowFromRaster ---------------------------------------------------------
