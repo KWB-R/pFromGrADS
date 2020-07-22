@@ -37,8 +37,11 @@ pFromGrADS <- function(coordFile, gridsPath, outFile,
     # get dateTime from GrADS file name
     tt <- getDateTimeFromFilename(grdi, sep = dateTimeSep)
 
-    # convert GrADS file contents to raster object
-    rr <- convertToRasterObject(xx, nx, ny, bbox, p4str)
+    # convert GrADS file contents to a matrix
+    mm <- valuesToMatrix(xx, nx, ny, naValue)
+    
+    # convert matrix to raster object
+    rr <- convertToRasterObject(mm, bbox, p4str)
 
     # store resulting raster in rList
     rList[[tt]] <- rr
@@ -118,24 +121,28 @@ getDateTimeFromFilename <- function(grdi, sep)
 }
 
 # convertToRasterObject --------------------------------------------------------
-convertToRasterObject <- function(xx, nx, ny, bbox, p4str)
+convertToRasterObject <- function(mm, bbox, p4str)
 {
-  mm <- matrix(NA, nrow = ny, ncol = nx)
+  raster::raster(mm, 
+                 xmn = bbox['xmin'], xmx = bbox['xmax'], 
+                 ymn = bbox['ymin'], ymx = bbox['ymax'],
+                 crs = p4str)
+}
 
+# valuesToMatrix ---------------------------------------------------------------
+valuesToMatrix <- function(x, nx, ny, naValue)
+{
+  m <- matrix(NA, nrow = ny, ncol = nx)
+  
   for (j in 1:ny) {
     end <- j * nx
     start <- end - nx + 1
-    mm[ny - j, ] <- xx[start:end]
+    m[ny - j, ] <- x[start:end]
   }
   
-  rr <- raster::raster(mm, 
-                       xmn = bbox['xmin'], xmx = bbox['xmax'], 
-                       ymn = bbox['ymin'], ymx = bbox['ymax'],
-                       crs = p4str)
-
-  rr[rr == naValue] <- NA_real_
+  m[m == naValue] <- NA_real_
   
-  rr
+  m
 }
 
 # extractRowFromRaster ---------------------------------------------------------
