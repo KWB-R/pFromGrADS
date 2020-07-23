@@ -1,7 +1,7 @@
 # function for reading GrADS precipitation data sets and building time series
 pFromGrADS <- function(coordFile, gridsPath, outFile, 
                        bbox, nx, ny, naValue, p4str,
-                       dateTimeSep){
+                       dateTimeSep, returnRasterList){
 
   library(sp)
   library(raster)
@@ -31,7 +31,7 @@ pFromGrADS <- function(coordFile, gridsPath, outFile,
   write.table(rain, outFile, quote=FALSE, row.names=FALSE, sep=",")
   
   # list for storing resulting raster objects
-  rList <- list()
+  if(returnRasterList){rList <- list()}
   
   # progress bar
   i=0 
@@ -73,7 +73,7 @@ pFromGrADS <- function(coordFile, gridsPath, outFile,
     rr[rr==naValue]=NA_real_
     
     # store resulting raster in rList
-    rList[[tt]] <- rr
+    if(returnRasterList){rList[[tt]] <- rr}
 
     # extract values at coordinates and add them to data.frame
     row <- paste(tt, 
@@ -88,5 +88,6 @@ pFromGrADS <- function(coordFile, gridsPath, outFile,
     setTxtProgressBar(pb, i)
   }
   
-  return(rList)
+  if(returnRasterList)
+    return(rList)
 }
