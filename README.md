@@ -1,7 +1,7 @@
 # pFromGrADS.R
-R function for building hourly precipitation time series from multiple single-level GrADS data sets.
+R function for building precipitation time series from multiple single-level GrADS data sets.
 
-The script contains function 'pFromGrADS', which takes as input multiple (hourly) single-level GrADS data sets (one GrADS file per hour, file extension '.grd'), uses R's `readBin` to read the binary data as a stream and `extract` s (using R's raster package) precipitation values at user-defined coordinates (contained in file 'coords.txt'). Results are written out in the form of a text file containing the time points ('dateTime' column) and their corresponding rainfall depths for all user-given points in the coordinates file. The timestamps in the dateTime column of the output text file are based on the GrADS file names (see below). The function returns a list containing all rasters (one per time step).
+The script contains function 'pFromGrADS', which takes as input multiple (one per time step) single-level GrADS data sets (one GrADS file per hour, file extension '.grd'), uses R's `readBin` to read the binary data as a stream and `extract` s (using R's raster package) precipitation values at user-defined coordinates (contained in file 'coords.txt'). Results are written out in the form of a text file containing the time points ('dateTime' column) and their corresponding rainfall depths for all user-given points in the coordinates file. The timestamps in the dateTime column of the output text file are based on the GrADS file names (see below). The function returns a list containing all rasters (one per time step).
 
 The function takes as parameters:
 - coordFile = text file containing the coordinates (columns: lat, lon) and names (colum: label) of the points where rainfall depths are to be extracted from the GrADS data
