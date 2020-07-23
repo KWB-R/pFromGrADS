@@ -1,18 +1,20 @@
 # pFromGrADS.R
 R function for building precipitation time series from multiple single-level GrADS data sets.
 
-The script contains function 'pFromGrADS', which takes as input multiple (one per time step) single-level GrADS data sets (`*.grd`), uses R's `readBin` to read the binary data as a stream and `extract` s (using R's `raster` package) the precipitation values at user-defined coordinates (contained in file 'coords.txt'). Results are written out in the form of a text file containing the time points ('dateTime' column) and their corresponding rainfall depths for all user-given points in the coordinates file. The timestamps in the dateTime column of the output text file are based on the GrADS file names (see below). The function can return a list containing all the generated rasters (one per time step, not recommended for very large datasets).
+The script contains function 'pFromGrADS', which takes as input multiple (one per time step) single-level GrADS data sets (`*.grd`), uses R's `readBin` to read the binary data and `extract` s (using R's `raster` package) the precipitation values at user-defined coordinates (contained in file 'coords.txt'). Results are written out in the form of a text file containing the time points ('dateTime' column) and their corresponding rainfall depths for all user-given points in the coordinates file. The timestamps in the dateTime column of the output text file are based on the GrADS file names (see below). The function can return a list (if `returnRasterList = TRUE`) containing all the generated rasters (one per time step, not recommended for very large datasets).
 
 The function takes as parameters:
-- coordFile = text file containing the coordinates (columns: lat, lon) and names (colum: label) of the points where rainfall depths are to be extracted from the GrADS data
-- gridsPath = path to the GrADS data
-- outFile = output file with path
-- bbox = 'bounding box', that is, x and y coordinates of the vertices of the GrADS data's enclosing rectangle. This is simply a vector of the form xmin=\<value\>, xmax=\<value\>, ymin=\<value\>, ymax=\<value\>)
-- nx = number of columns of GrADS data set
-- ny = number of rows of GrADS data set
-- naValue = NA identifier in GrADS data set
-- p4str = proj4 string of GrADS data set's coordinate reference system
-- dateTimeSep = character preceeding the time stamp in the GrADS file name. For instance, in a file named 'xxxxxx.xxxxx_xxxx-2020070610.grd', dateTime would be 2020070610. This string is copied without modifications into the corresponding row of the output file's dateTime column.
+- ´coordFile´  = text file containing the coordinates (columns: lat, lon) and names (colum: label) of the points where rainfall depths are to be extracted from the GrADS data
+- ´gridsPath´ = path to the GrADS data
+- ´outFile´ = output file with path
+- ´recordSize´ = number of bytes in one record
+- ´bbox´ = 'bounding box', that is, x and y coordinates of the vertices of the GrADS data's enclosing rectangle. This is simply a vector of the form xmin=\<value\>, xmax=\<value\>, ymin=\<value\>, ymax=\<value\>)
+- ´nx´ = number of columns of GrADS data set
+- ´ny´ = number of rows of GrADS data set
+- ´naValue´ = NA identifier in GrADS data set
+- ´p4str´ = proj4 string of GrADS data set's coordinate reference system
+- ´dateTimeSep´ = character preceeding the time stamp in the GrADS file name. For instance, in a file named 'xxxxxx.xxxxx_xxxx-2020070610.grd', dateTime would be 2020070610. This string is copied without modifications into the corresponding row of the output file's dateTime column.
+- ´returnRasterList´ = if TRUE, returns a list containing all generated raster objects
 
 ## Example application
 
@@ -23,7 +25,7 @@ Assuming all required data (GrADS grids, coordinates file and script with functi
 source('c:/data/pFromGrADS.R')
 
 # call function using the given input parameters
-rList <- pFromGrADS(coordFile='c:/data/coords.txt', gridsPath='c:/data/grids/', outFile='c:/data/rain.txt', bbox=c(xmin=70.05, xmax=140.05, ymin=15.05, ymax=59.05), nx=700, ny=440, naValue=-999, p4str="+proj=longlat +datum=WGS84", dateTimeSep='-', returnRasterList=TRUE)
+rList <- pFromGrADS(coordFile='c:/data/coords.txt', gridsPath='c:/data/grids/', outFile='c:/data/rain.txt', bbox=c(xmin=70.05, xmax=140.05, ymin=15.05, ymax=59.05), nx=700, ny=440, naValue=-999, p4str="+proj=longlat +datum=WGS84", dateTimeSep='-', returnRasterList=TRUE, recordSize=4)
 ```
 
 The resulting output file contains the time stamps in the first column (which are built using the GrADS files' names) and the corresponding rainfall depth at each time step for each coordinate point in coordFile:
