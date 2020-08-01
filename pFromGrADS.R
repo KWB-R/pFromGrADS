@@ -1,7 +1,7 @@
 # function for reading GrADS precipitation data sets and building time series
 pFromGrADS <- function(coordFile, gridsPath, outFile, 
-                       bbox, nx, ny, naValue, p4str,
-                       dateTimeSep) {
+                       bbox, nx, ny, naValue, recordSize,
+                       p4str, dateTimeSep, returnRasterList){
 
   library(sp)
   library(raster)
@@ -10,53 +10,54 @@ pFromGrADS <- function(coordFile, gridsPath, outFile,
   coords <- readCoordinates(coordFile)
   
   # list GrADS files
-  grdFiles <- listGridFiles(gridsPath)
+  grdFiles <- listGradsFiles(gridsPath)
   
   # prepare output data.frame
-  rain <- initRainDataFrame(columns = coords$label)
+  rain <- initRainData(columns = coords$label)
   
   # write empty output data.frame to disk
   writeRainData(rain, outFile)
 
   # list for storing resulting raster objects
-  rList <- list()
+  if(returnRasterList){rList <- list()}
   
   # progress bar
-  i <- 0 
-  pb <- txtProgressBar(min = 0, max = length(grdFiles), style = 3)
+  i=0 
+  pb <- txtProgressBar(min=0, max=length(grdFiles), style=3)
   
   # loop over GrADS files
-  for (grdi in grdFiles) {
+  for(grdi in grdFiles){
     
     # update counter
-    i <- i + 1
+    i=i+1
     
-    # read GrADS data values
-    xx <- readGradsData(file = paste0(gridsPath, grdi), nx, ny)
-
+    # read GrADS data set as stream; records have size = recordSize (bytes)
+    xx <- readGradsData(grdname = paste0(gridsPath, grdi), 
+                        grdsize = nx * ny,
+                        recordSize = recordSize)
+    
     # get dateTime from GrADS file name
     tt <- getDateTimeFromFilename(grdi, sep = dateTimeSep)
 
-    # convert GrADS file contents to a matrix
-    mm <- valuesToMatrix(xx, nrow = ny, naValue)
-    
-    # convert matrix to raster object
+    # convert GrADS file contents to raster object
+    mm <- valuesToMatrix(xx, nrow = ny, naValue = naValue)
     rr <- convertToRasterObject(mm, bbox, p4str)
 
     # store resulting raster in rList
-    rList[[tt]] <- rr
-
+    if(returnRasterList){rList[[tt]] <- rr}
+    
     # extract values at coordinates and add them to data.frame
     row <- extractRowFromRaster(tt, rr, lon = coords$lon, lat = coords$lat)
 
     # append line to results file
-    write(row, file = outFile, append = TRUE)
+    write(row, file=outFile, append=TRUE)
     
     # update progress bar and counter
     setTxtProgressBar(pb, i)
   }
   
-  return(rList)
+  if(returnRasterList)
+    return(rList)
 }
 
 # readCoordinates --------------------------------------------------------------
@@ -72,8 +73,8 @@ readCoordinates <- function(coordFile)
              stringsAsFactors = FALSE)
 }
 
-# listGridFiles ----------------------------------------------------------------
-listGridFiles <- function(gridsPath)
+# listGradsFiles ---------------------------------------------------------------
+listGradsFiles <- function(gridsPath)
 {
   if (! dir.exists(gridsPath))
     stop('folder ', gridsPath, ' not found')
@@ -81,8 +82,8 @@ listGridFiles <- function(gridsPath)
   list.files(gridsPath, pattern = "*.grd")
 }
 
-# initRainDataFrame ------------------------------------------------------------
-initRainDataFrame <- function(columns)
+# initRainData -----------------------------------------------------------------
+initRainData <- function(columns)
 {
   columns <- stats::setNames(nm = c("dateTime", columns))
 
@@ -99,16 +100,12 @@ writeRainData <- function(rain, outFile)
 }
 
 # readGradsData ----------------------------------------------------------------
-readGradsData <- function(file, nx, ny)
+readGradsData <- function(grdname, grdsize, recordSize)
 {
-  # Open the file as a binary stram. Close the file when this function is quit
-  # (either regularly or due to an error)
-  con <- file(file, "rb")
-  on.exit(close(con))
-  
-  # Records have a size of 4 bytes. Read one more than required for the grid.
-  # Directly remove the first record by indexing with [-1]
-  readBin(con, what = "numeric", n = nx * ny + 1L, size = 4L)[-1L]
+  grdconn = file(grdname, "rb")
+  xx = readBin(con=grdconn, what="numeric", n=grdsize, size=recordSize)
+  close(grdconn)
+  xx
 }
 
 # getDateTimeFromFilename ------------------------------------------------------
@@ -124,7 +121,7 @@ getDateTimeFromFilename <- function(grdi, sep)
 valuesToMatrix <- function(x, nrow, naValue)
 {
   # Arrange the values in a matrix, fill the matrix row by row
-  m <- matrix(x, byrow = TRUE, nrow = nrow)[rev(seq_len(nrow)), ]
+  m <- matrix(x, nrow = nrow, byrow = TRUE)
   
   # Replace NA indicating value with a proper NA value
   m[m == naValue] <- NA_real_
