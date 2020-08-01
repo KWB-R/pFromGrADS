@@ -129,7 +129,7 @@ valuesToMatrix <- function(x, nrow, naValue)
   # Revert the row order
   m[rev(seq_len(nrow)), ]
 }
-
+                             
 # convertToRasterObject --------------------------------------------------------
 convertToRasterObject <- function(mm, bbox, p4str)
 {
