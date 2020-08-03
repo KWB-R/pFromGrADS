@@ -75,3 +75,7 @@ movie.name='c:/data/20160601.gif', ani.width=700, ani.height=450)
 ```
 
 ![](anim20160601.gif)
+
+# sensAna.R
+
+This script contains a clear workflow for conducting a sensitivity analysis with the numerical rainfall-runoff model [SWMM](https://www.epa.gov/water-research/storm-water-management-model-swmm), concentrating on the LID module (LID = low-impact development, green roof in this case).
