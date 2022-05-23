@@ -1,5 +1,7 @@
 # pFromGrADS.R
 
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.6571431.svg)](https://doi.org/10.5281/zenodo.6571431)
+
 R function for building precipitation time series from multiple single-level GrADS data sets.
 
 The script contains function `pFromGrADS()`, which takes as input multiple (one per time step) single-level GrADS data sets (`*.grd`), uses R's `readBin` to read the binary data and `extract` s (using R's `raster` package) the precipitation values at user-defined coordinates (contained in file 'coords.txt'). Results are written out in the form of a text file containing the time points ('dateTime' column) and their corresponding rainfall depths for all user-given points in the coordinates file. The timestamps in the dateTime column of the output text file are based on the GrADS file names (see below). The function can return a list (if `returnRasterList = TRUE`) containing all the generated rasters (one per time step, not recommended for very large datasets).
